@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.cxy.firststudio.MainActivity">
 
     <!--<TextView
@@ -32,6 +32,25 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         />
+
+    <com.cxy.firststudio.myviews.AnimDownloadProgressButton
+        android:id="@+id/progressbutton"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:layout_centerVertical="true"
+        app:progressbtn_backgroud_color="#4682B4"
+        app:progressbtn_backgroud_second_color="#6f4682B4"/>
+    
+    <com.cxy.firststudio.myviews.ArcMenu
+        android:id="@+id/ray_menu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="100dp"
+        app:childSize="50dp"
+        app:fromDegrees="180"
+        app:toDegrees="270"/>
 
     <Button
         android:layout_width="wrap_content"
@@ -107,11 +126,17 @@
         android:visibility="gone"
         ></com.cxy.firststudio.myviews.MyClockPro>
 
+    <TextView
+        android:id="@+id/text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/my_recycler_view"/>
 
-    <com.cxy.firststudio.myviews.McolumnChart1
+
+    <!--<com.cxy.firststudio.myviews.McolumnChart1
         android:id="@+id/mcolumnchart"
         android:layout_width="50dp"
         android:layout_height="200dp"
-        android:layout_centerInParent="true"/>
+        android:layout_centerInParent="true"/>-->
 
 </RelativeLayout>

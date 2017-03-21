@@ -1,18 +1,31 @@
 package com.cxy.firststudio;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Environment;
+import android.os.Handler;
+import android.provider.MediaStore;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ExpandableListView;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.cxy.firststudio.Utils.PlanListBean;
+import com.cxy.firststudio.myviews.AnimDownloadProgressButton;
+import com.cxy.firststudio.myviews.ArcMenu;
 import com.cxy.firststudio.myviews.McolumnChart;
 import com.cxy.firststudio.myviews.McolumnChart1;
 import com.cxy.firststudio.myviews.MyClock;
@@ -37,6 +50,9 @@ public class MainActivity extends AppCompatActivity {
     private ExpandableListView elv;
     private MyClock myClock;
     private McolumnChart1 m_McolumnChart;
+    private TextView mtv;
+    private AnimDownloadProgressButton mProgressBtn;
+    String[] ITEM_DRAWABLES = {"私人","医生","未读","咨询","全部"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,16 +68,30 @@ public class MainActivity extends AppCompatActivity {
         btngetbitmap  = (Button) findViewById(R.id.button2);
         btnredcolor = (Button) findViewById(R.id.button3);
         btnlines = (Button) findViewById(R.id.button4);
+        mtv = (TextView) findViewById(R.id.text);
+        mProgressBtn = (AnimDownloadProgressButton) findViewById(R.id.progressbutton);
         btnclear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                myview.clear();
+                Cursor cursor = getContentResolver().query(
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI, null, null,null , MediaStore.Images.Media.DATA+" DESC");
+                while (cursor.moveToNext()) {
+                    //获取图片的名称
+                    String name = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME));
+                    //获取图片的生成日期
+                    String data = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA));
+                    //获取图片的详细信息
+                    String desc = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DESCRIPTION));
+                    Log.d("chen", "onClick: "+data);
+                }
             }
         });
         btnredcolor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                myview.setColor(Color.RED);
+//                myview.setColor(Color.RED);
+                Intent intent = new Intent(MainActivity.this, MyViewpagerTestActivity.class);
+                startActivity(intent);
             }
         });
         btngetbitmap.setOnClickListener(new View.OnClickListener() {
@@ -79,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        m_McolumnChart = (McolumnChart1) findViewById(R.id.mcolumnchart);
+//        m_McolumnChart = (McolumnChart1) findViewById(R.id.mcolumnchart);
 
 //        List<PlanListBean> mlist = new ArrayList<PlanListBean>();
 //        for(int k = 0; k < 10 ; k++){
@@ -88,21 +118,71 @@ public class MainActivity extends AppCompatActivity {
             mPlanListBean.setXiaolv((float) (0.65));
 //            mlist.add(mPlanListBean);
 //        }
-        m_McolumnChart.setValue(mPlanListBean);
+//        m_McolumnChart.setValue(mPlanListBean);
+
+
+
+        mtv.setText(createSpannable("nishi", "ibvhn    obw pwbvinioboiubn "));
 
 
 
 
+        mWaterWaveView = (WaterWaveView) findViewById(R.id.wave_view);
+        mWaterWaveView.setmWaterLevel(0.8f);
+        mWaterWaveView.startWave();
 
+        myClock = (MyClock) findViewById(R.id.my_oclock);
+        myClock.setTime(10, 45, true);
+        mProgressBtn.setMaxProgress(100);
+        mProgressBtn.setProgress(0f);
+        mProgressBtn.setButtonRadius(10);
+        mProgressBtn.setState(0);
+        mProgressBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mProgressBtn.setState(AnimDownloadProgressButton.DOWNLOADING);
+                mProgressBtn.setProgressText("下载中", mProgressBtn.getProgress() + 8);
+                Log.d("mProgressBtn", "showTheButton: " + mProgressBtn.getProgress());
+                if (mProgressBtn.getProgress() + 10 > 100) {
+                    mProgressBtn.setState(AnimDownloadProgressButton.INSTALLING);
+                    mProgressBtn.setCurrentText("下载完成");
+                    mProgressBtn.setGravity(Gravity.LEFT);
+                    new Handler().postDelayed(new Runnable() {
+                        public void run() {
+                            mProgressBtn.setState(AnimDownloadProgressButton.NORMAL);
+                            mProgressBtn.setCurrentText("");
+                            mProgressBtn.setGravity(Gravity.LEFT);
+                        }
+                    }, 2000);   //2秒
+                }
+            }
+        });
 
+        ArcMenu menu = (ArcMenu) findViewById(R.id.ray_menu);
 
+        final int itemCount = ITEM_DRAWABLES.length;
+        for (int i = 0; i < itemCount; i++) {
+            TextView item = new TextView(this);
+            item.setText(ITEM_DRAWABLES[i]);
+            item.setBackground(ContextCompat.getDrawable(this,R.drawable.custom_cricle_white));
+            item.setTextColor(ContextCompat.getColor(this,R.color.red));
+            item.setGravity(Gravity.CENTER);
+            final int position = i;
+            menu.addItem(item, new View.OnClickListener() {
 
-//        mWaterWaveView = (WaterWaveView) findViewById(R.id.wave_view);
-//        mWaterWaveView.setmWaterLevel(0.8f);
-//        mWaterWaveView.startWave();
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(MainActivity.this, "position:" + position, Toast.LENGTH_SHORT).show();
+                }
+            });// Add a menu item
+        }
+    }
 
-//        myClock = (MyClock) findViewById(R.id.my_oclock);
-//        myClock.setTime(10, 45, true);
+    private SpannableStringBuilder createSpannable(String name, String context) {
+        SpannableStringBuilder builder = new SpannableStringBuilder(name.concat(context));
+        ForegroundColorSpan redSpan = new ForegroundColorSpan(ContextCompat.getColor(this,R.color.red));
+        builder.setSpan(redSpan, 0, name.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return builder;
     }
 
 

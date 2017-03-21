@@ -4,6 +4,16 @@
     android:layout_height="match_parent"
     android:background="@drawable/logo"
     android:gravity="bottom">
+    
+    <com.cxy.firststudio.myviews.WaveView
+        android:id="@+id/m_wave"
+        android:layout_width="match_parent"
+        android:layout_height="300dp" />
+
+    <com.cxy.firststudio.myviews.mDiagramTable1
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:background="@color/orange"/>
 
 
     <LinearLayout
